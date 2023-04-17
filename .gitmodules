@@ -1,0 +1,4 @@
+[submodule "arduino-cmake"]
+	path = arduino-cmake
+	url = https://github.com/wgrs33/arduino-cmake.git
+	revision = bugfix/correct-makefile-creation
