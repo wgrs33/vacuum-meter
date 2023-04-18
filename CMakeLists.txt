@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.8.2)
 
-project(VacuumMeter)
+###########################################################################################
 
 find_package(Git QUIET)
-if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
+if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
 # Update submodules as needed
     option(GIT_SUBMODULE "Check submodules during build" ON)
     if(GIT_SUBMODULE)
@@ -17,9 +17,15 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     endif()
 endif()
 
-if(NOT EXISTS "${PROJECT_SOURCE_DIR}/arduino-cmake")
+if(NOT EXISTS "${CMAKE_SOURCE_DIR}/arduino-cmake")
     message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 endif()
+
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/arduino-cmake/cmake/Arduino-Toolchain.cmake")
+
+###########################################################################################
+
+project(VacuumMeter VERSION 1.0.0)
 
 arduino_cmake_project(${PROJECT_NAME} BOARD_NAME nano BOARD_CPU atmega168)
 
