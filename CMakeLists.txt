@@ -23,9 +23,21 @@ endif()
 
 arduino_cmake_project(${PROJECT_NAME} BOARD_NAME nano BOARD_CPU atmega168)
 
-add_arduino_executable(${PROJECT_NAME} ${PROJECT_NAME}.cpp)
+add_arduino_executable(${PROJECT_NAME})
 
-find_arduino_library(liquid_Crystal LiquidCrystal_I2C 3RD_PARTY)
-link_arduino_library(${PROJECT_NAME} liquid_Crystal)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+add_subdirectory(src)
+
+find_arduino_library(LIB_LiquidCrystal_I2C LiquidCrystal_I2C 3RD_PARTY)
+find_arduino_library(LIB_Bounce2 Bounce2 3RD_PARTY)
+find_arduino_library(LIB_Encoder Encoder 3RD_PARTY)
+find_arduino_library(LIB_EncoderButton EncoderButton 3RD_PARTY)
+
+link_arduino_library(LIB_EncoderButton LIB_Bounce2)
+link_arduino_library(LIB_EncoderButton LIB_Encoder)
+
+link_arduino_library(${PROJECT_NAME} LIB_LiquidCrystal_I2C)
+link_arduino_library(${PROJECT_NAME} LIB_EncoderButton)
 
 set_target_upload_port(${PROJECT_NAME} /dev/ttyUSB0)
