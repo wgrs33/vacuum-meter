@@ -22,6 +22,7 @@ if(NOT EXISTS "${CMAKE_SOURCE_DIR}/arduino-cmake")
 endif()
 
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/arduino-cmake/cmake/Arduino-Toolchain.cmake")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 ###########################################################################################
 

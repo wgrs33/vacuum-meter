@@ -5,7 +5,7 @@
 `
 mkdir _build
 cd _build/
-cmake -DAUTO_SET_SKETCHBOOK_PATH=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
+cmake ..
 `
 
 ## Build
