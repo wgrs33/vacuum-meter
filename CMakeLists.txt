@@ -33,7 +33,7 @@ if(DEBUG)
     add_compile_definitions("DEBUG")
 endif()
 
-arduino_cmake_project(${PROJECT_NAME} BOARD_NAME nano BOARD_CPU atmega168)
+arduino_cmake_project(${PROJECT_NAME} BOARD_NAME nano BOARD_CPU atmega328)
 
 add_arduino_executable(${PROJECT_NAME})
 
@@ -42,7 +42,16 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/i
 add_subdirectory(src)
 
 find_arduino_library(LIB_LiquidCrystal_I2C LiquidCrystal_I2C 3RD_PARTY)
+find_arduino_library(LIB_Bounce2 Bounce2 3RD_PARTY)
+find_arduino_library(LIB_Encoder Encoder 3RD_PARTY)
+find_arduino_library(LIB_EncoderButton EncoderButton 3RD_PARTY)
+find_arduino_library(LIB_LcdMenu LcdMenu 3RD_PARTY HEADER_ONLY)
+
+link_arduino_library(LIB_EncoderButton LIB_Bounce2)
+link_arduino_library(LIB_EncoderButton LIB_Encoder)
 
 link_arduino_library(${PROJECT_NAME} LIB_LiquidCrystal_I2C)
+link_arduino_library(${PROJECT_NAME} LIB_EncoderButton)
+link_arduino_library(${PROJECT_NAME} LIB_LcdMenu HEADER_ONLY)
 
 set_target_upload_port(${PROJECT_NAME} /dev/ttyUSB0)

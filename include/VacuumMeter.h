@@ -13,9 +13,13 @@ constexpr unsigned int VACCUM_AMIN = 41U;
 constexpr unsigned int VACCUM_AMAX = 982U;
 constexpr unsigned int VACCUM_VMIN = 200U;
 constexpr unsigned int VACCUM_VMAX = 2500U;
+constexpr int VACCUM_DMIN = -850;
+constexpr int VACCUM_DMAX = 0;
 
 /// @brief Show synchronization status (2 strokes)
 void synchronization();
+void pression_diff();
+void pression_absolute();
 
 /// @brief Set bar graph value
 /// @param value value in the range [0 - 70]
@@ -35,3 +39,8 @@ bool calibrate();
 
 /// @brief Refresh LCD screen
 void updateLcd();
+
+/// @brief Convert raw value
+/// @param value Raw value
+/// @return Converted value
+int convert_value(int value);
