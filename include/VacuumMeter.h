@@ -23,9 +23,9 @@ void show_menu();
 
 void synchronization();
 
-void pression_diff();
+void pressure_diff();
 
-void pression_absolute();
+void pressure_absolute();
 
 void set_bar(int value);
 
