@@ -1,7 +1,7 @@
 [submodule "arduino-cmake"]
 	path = arduino-cmake
 	url = https://github.com/wgrs33/arduino-cmake.git
-	revision = master
+	revision = heads/master
 [submodule "libraries/LiquidCrystal_I2C"]
 	path = libraries/LiquidCrystal_I2C
 	url = https://github.com/johnrickman/LiquidCrystal_I2C.git
@@ -14,3 +14,6 @@
 [submodule "libraries/EncoderButton"]
 	path = libraries/EncoderButton
 	url = https://github.com/Stutchbury/EncoderButton.git
+[submodule "libraries/LcdMenu"]
+	path = libraries/LcdMenu
+	url = https://github.com/forntoh/LcdMenu.git
