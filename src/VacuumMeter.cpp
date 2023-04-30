@@ -9,11 +9,11 @@
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 EncoderButton encoder(2, 3, 8);
 
-uint8_t g_menu_state = 0;
 uint8_t g_menu_option = 1;
 uint16_t g_delta = 0;
 uint16_t g_pressure_atmo = 0;
 bool g_setup_done = false;
+volatile uint8_t g_menu_state = 0;
 volatile bool g_enter_function = true;
 volatile uint16_t g_vacuum_1 = 0;
 volatile uint16_t g_vacuum_2 = 0;
@@ -54,7 +54,7 @@ void setup() {
     encoder.setEncoderHandler([](EncoderButton &e) {
         if (!g_menu_state) {
             auto val = g_menu_option + e.increment();
-            g_menu_option = constrain(val, 1, 3);
+            g_menu_option = constrain(val, 1, 4);
         }
     });
     encoder.setLongClickHandler([](EncoderButton &e) { g_menu_state = 0; });
@@ -82,6 +82,10 @@ void show_menu() {
         case 3:
             lcd.setCursor(0, 1);
             lcd.print("<  P.absolute  >");
+            break;
+        case 4:
+            lcd.setCursor(0, 1);
+            lcd.print("<  Calibrate   >");
             break;
     }
 }
@@ -211,6 +215,7 @@ void align_right(int value, int max_length) {
 }
 
 void updateLcd() {
+    static uint8_t cnt = 0;
     if (g_setup_done) {
         switch (g_menu_state) {
             case 0:
@@ -242,6 +247,18 @@ void updateLcd() {
                     lcd.print("mmHg");
                 }
                 pressure_absolute();
+                break;
+            case 4:
+                if (g_enter_function) {
+                    g_enter_function = false;
+                    lcd.clear();
+                    lcd.print("Calibrating...");
+                    calibrate();
+                }
+                if (++cnt > 10) {
+                    cnt = 0;
+                    g_menu_state = 0;
+                }
                 break;
         }
     }
