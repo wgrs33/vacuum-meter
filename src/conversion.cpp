@@ -1,5 +1,7 @@
 #include "conversion.h"
 
+#define K_MID_TOOLS_COEFF_BASE   1000U
+
 int convert_adc_kPa(int value) {
     int voltage = (value * 5000.0 / 1023.0);
     int kpa = (voltage / 45) + 15;
