@@ -7,7 +7,7 @@
 #include "custom_chars.h"
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
-EncoderButton encoder(2, 3, 8);
+EncoderButton encoder(2, 3, 4);
 
 uint8_t g_menu_option = 1;
 uint16_t g_delta = 0;
@@ -49,7 +49,11 @@ void setup() {
     delay(2000);
     lcd.clear();
 
-    calibrate();
+    lcd.print("Calibrating...");
+    while(!calibrate()) {
+        delay(100);
+    }
+    lcd.clear();
 
     encoder.setEncoderHandler([](EncoderButton &e) {
         if (!g_menu_state) {
@@ -215,7 +219,6 @@ void align_right(int value, int max_length) {
 }
 
 void updateLcd() {
-    static uint8_t cnt = 0;
     if (g_setup_done) {
         switch (g_menu_state) {
             case 0:
@@ -253,10 +256,8 @@ void updateLcd() {
                     g_enter_function = false;
                     lcd.clear();
                     lcd.print("Calibrating...");
-                    calibrate();
                 }
-                if (++cnt > 10) {
-                    cnt = 0;
+                if (calibrate()) {
                     g_menu_state = 0;
                 }
                 break;
@@ -264,23 +265,33 @@ void updateLcd() {
     }
 }
 
-void calibrate() {
-    g_pressure_atmo =
-        map(g_vacuum_1, VACCUM_AMIN, VACCUM_AMAX, VACCUM_VMIN, VACCUM_VMAX);
-    g_delta = g_pressure_atmo - map(g_vacuum_2, VACCUM_AMIN, VACCUM_AMAX,
-                                    VACCUM_VMIN, VACCUM_VMAX);
+bool calibrate() {
+    static unsigned int v1 = 0, v2 = 0;
+    static uint8_t cnt = 0;
+    v1 += g_vacuum_1;
+    v2 += g_vacuum_2;
+
+    if (++cnt >= 10) {
+        g_pressure_atmo =
+            map((v1 / 10), VACCUM_AMIN, VACCUM_AMAX, VACCUM_VMIN, VACCUM_VMAX);
+        g_delta = g_pressure_atmo - map((v2 / 10), VACCUM_AMIN, VACCUM_AMAX,
+                                        VACCUM_VMIN, VACCUM_VMAX);
+        cnt = 0;
+        return true;
+    }
+    return false;
 }
 
 ISR(TIMER2_COMPA_vect) {
     static int counter = 0;
-    uint32_t sum_a0 = 0, sum_a1 = 0;
+    unsigned int sum_a0 = 0, sum_a1 = 0;
     encoder.update();
     for (uint8_t i = 0; i < ADC_SAMPLES; ++i) {
         sum_a0 += analogRead(VACCUM_1);
         sum_a1 += analogRead(VACCUM_2);
     }
-    g_vacuum_1 = sum_a0 / ADC_SAMPLES;
-    g_vacuum_2 = sum_a1 / ADC_SAMPLES;
+    g_vacuum_1 = constrain(sum_a0 / ADC_SAMPLES, VACCUM_AMIN, VACCUM_AMAX);
+    g_vacuum_2 = constrain(sum_a1 / ADC_SAMPLES, VACCUM_AMIN, VACCUM_AMAX);
 
     if (++counter >= 50) {  // 50 * 4 ms = 200 ms
         counter = 0;

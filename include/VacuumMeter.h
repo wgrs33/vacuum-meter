@@ -9,15 +9,15 @@ constexpr int VACCUM_2 = A0;
 constexpr int BAR_MIN = 0;
 constexpr int BAR_MAX = 70;
 
-constexpr unsigned int VACCUM_AMIN = 41;
-constexpr unsigned int VACCUM_AMAX = 962;
-constexpr unsigned int VACCUM_VMIN = 150;
-constexpr unsigned int VACCUM_VMAX = 1150;
-constexpr int VACCUM_DMIN = -850;
-constexpr int VACCUM_DMAX = 0;
+constexpr unsigned int VACCUM_AMIN = 41U;
+constexpr unsigned int VACCUM_AMAX = 982U;
+constexpr unsigned int VACCUM_VMIN = 200U;
+constexpr unsigned int VACCUM_VMAX = 2500U;
+constexpr int VACCUM_DMIN = -800;
+constexpr int VACCUM_DMAX = 1500;
 
 constexpr double c_MMHG = 1.33322;
-constexpr unsigned int ADC_SAMPLES = 10;
+constexpr unsigned int ADC_SAMPLES = 10U;
 
 /// @brief Show user menu
 void show_menu();
@@ -44,4 +44,5 @@ void align_right(int value, int max);
 /// @details Both inputs must not be connected to any source.
 /// Atmospheric pressure is stored.
 /// Delta is calculated between two inputs.
-void calibrate();
+/// @return True if calibration has finished
+bool calibrate();

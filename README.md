@@ -8,7 +8,7 @@ This project was based on a device done by Denis Tauvel ([LINK](http://denis.tau
 ## Parts
 * Arduino nano with ATmega168P
 * Encoder with a button (or a separate button)
-* Two pressure sensors MPX6115AC6U
+* Two pressure sensors MPX4250PA
 * 2x16 LCD with I2C communication ([I2C adapter board](https://www.amazon.com/LCD1602-Display-I2C-Interface-Module/dp/B07D3YPK3H))
 
 ## Connections
