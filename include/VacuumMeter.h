@@ -46,3 +46,6 @@ void align_right(int value, int max);
 /// Delta is calculated between two inputs.
 /// @return True if calibration has finished
 bool calibrate();
+
+/// @brief Refresh LCD screen
+void updateLcd();

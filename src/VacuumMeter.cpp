@@ -9,14 +9,23 @@
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 EncoderButton encoder(2, 3, 4);
 
-uint8_t g_menu_option = 1;
+enum LcdMode {
+    MENU = 0,
+    SYNCHRO = 1,
+    VACUUM = 2,
+    ABS = 3,
+    CALIB = 4
+};
+
+LcdMode g_menu_option = LcdMode::SYNCHRO;
 uint16_t g_delta = 0;
 uint16_t g_pressure_atmo = 0;
 bool g_setup_done = false;
-volatile uint8_t g_menu_state = 0;
+volatile LcdMode g_menu_state = LcdMode::MENU;
 volatile bool g_enter_function = true;
 volatile uint16_t g_vacuum_1 = 0;
 volatile uint16_t g_vacuum_2 = 0;
+volatile bool g_show_menu = false;
 
 void setup() {
     pinMode(BUTTON, INPUT_PULLUP);
@@ -56,12 +65,12 @@ void setup() {
     lcd.clear();
 
     encoder.setEncoderHandler([](EncoderButton &e) {
-        if (!g_menu_state) {
+        if (g_menu_state != LcdMode::MENU) {
             auto val = g_menu_option + e.increment();
-            g_menu_option = constrain(val, 1, 4);
+            g_menu_option = LcdMode(constrain(val, 1, 4));
         }
     });
-    encoder.setLongClickHandler([](EncoderButton &e) { g_menu_state = 0; });
+    encoder.setLongClickHandler([](EncoderButton &e) { g_menu_state = LcdMode::MENU; });
     encoder.setClickHandler([](EncoderButton &e) {
         g_enter_function = true;
         g_menu_state = g_menu_option;
@@ -69,25 +78,30 @@ void setup() {
     g_setup_done = true;
 }
 
-void loop() {}
+void loop() {
+    if (g_show_menu) {
+        g_show_menu = false;
+        updateLcd();
+    }
+}
 
 void show_menu() {
     lcd.setCursor(0, 0);
     lcd.print("Choose function ");
     switch (g_menu_option) {
-        case 1:
+        case LcdMode::SYNCHRO:
             lcd.setCursor(0, 1);
             lcd.print("<   Synchro    >");
             break;
-        case 2:
+        case LcdMode::VACUUM:
             lcd.setCursor(0, 1);
             lcd.print("<    Vacuum    >");
             break;
-        case 3:
+        case LcdMode::ABS:
             lcd.setCursor(0, 1);
             lcd.print("<  P.absolute  >");
             break;
-        case 4:
+        case LcdMode::CALIB:
             lcd.setCursor(0, 1);
             lcd.print("<  Calibrate   >");
             break;
@@ -221,10 +235,10 @@ void align_right(int value, int max_length) {
 void updateLcd() {
     if (g_setup_done) {
         switch (g_menu_state) {
-            case 0:
+            case LcdMode::MENU:
                 show_menu();
                 break;
-            case 1:
+            case LcdMode::SYNCHRO:
                 if (g_enter_function) {
                     g_enter_function = false;
                     lcd.clear();
@@ -233,7 +247,7 @@ void updateLcd() {
                 }
                 synchronization();
                 break;
-            case 2:
+            case LcdMode::VACUUM:
                 if (g_enter_function) {
                     g_enter_function = false;
                     lcd.clear();
@@ -241,7 +255,7 @@ void updateLcd() {
                 }
                 pressure_diff();
                 break;
-            case 3:
+            case LcdMode::ABS:
                 if (g_enter_function) {
                     g_enter_function = false;
                     lcd.clear();
@@ -251,14 +265,15 @@ void updateLcd() {
                 }
                 pressure_absolute();
                 break;
-            case 4:
+            case LcdMode::CALIB:
                 if (g_enter_function) {
                     g_enter_function = false;
                     lcd.clear();
                     lcd.print("Calibrating...");
                 }
                 if (calibrate()) {
-                    g_menu_state = 0;
+                    g_menu_state = LcdMode::MENU;
+                    g_menu_option = LcdMode::SYNCHRO;
                 }
                 break;
         }
@@ -295,6 +310,6 @@ ISR(TIMER2_COMPA_vect) {
 
     if (++counter >= 50) {  // 50 * 4 ms = 200 ms
         counter = 0;
-        updateLcd();
+        g_show_menu = true;
     }
 }
