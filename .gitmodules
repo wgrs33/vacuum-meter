@@ -5,15 +5,3 @@
 [submodule "libraries/LiquidCrystal_I2C"]
 	path = libraries/LiquidCrystal_I2C
 	url = https://github.com/johnrickman/LiquidCrystal_I2C.git
-[submodule "libraries/Bounce2"]
-	path = libraries/Bounce2
-	url = https://github.com/thomasfredericks/Bounce2.git
-[submodule "libraries/Encoder"]
-	path = libraries/Encoder
-	url = https://github.com/PaulStoffregen/Encoder.git
-[submodule "libraries/EncoderButton"]
-	path = libraries/EncoderButton
-	url = https://github.com/Stutchbury/EncoderButton.git
-[submodule "libraries/LcdMenu"]
-	path = libraries/LcdMenu
-	url = https://github.com/forntoh/LcdMenu.git
