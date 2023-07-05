@@ -23,10 +23,6 @@ void setup() {
     OCR2A = 250;           // 250*125 = 31250 = 16Mhz/256/2
     sei();
 
-#if defined(DEBUG)
-    Serial.begin(19200);
-#endif
-
     lcd.init();
     lcd.createChar(0, chStartEmpty);
     lcd.createChar(1, caseEmpty);
@@ -47,7 +43,7 @@ void setup() {
 
     lcd.print("Calibrating...");
     while(!calibrate()) {
-        delay(100);
+        delay(200);
     }
     lcd.clear();
 
@@ -136,7 +132,7 @@ void updateLcd() {
 
 bool calibrate() {
     static uint8_t cnt = 0;
-    if (++cnt == 20) {
+    if (++cnt == 10) {
         g_delta = map(g_vacuum_1, VACCUM_AMIN, VACCUM_AMAX, VACCUM_VMIN, VACCUM_VMAX) 
             - map(g_vacuum_2, VACCUM_AMIN, VACCUM_AMAX, VACCUM_VMIN, VACCUM_VMAX);
         cnt = 0;
@@ -159,22 +155,6 @@ ISR(TIMER2_COMPA_vect) {
     if (++counter >= 50) {  // 50 * 4 ms = 200 ms
         g_vacuum_1 = constrain((uint16_t)(floor(filtered1)), VACCUM_AMIN, VACCUM_AMAX);
         g_vacuum_2 = constrain((uint16_t)(floor(filtered2)), VACCUM_AMIN, VACCUM_AMAX);
-#if defined(DEBUG)
-        Serial.print("f1: ");
-        Serial.print(filtered1);
-        Serial.print(" | f2: ");
-        Serial.print(filtered2);
-        Serial.print(" | g_vacuum_1: ");
-        Serial.print(g_vacuum_1);
-        Serial.print(" | g_vacuum_2: ");
-        Serial.print(g_vacuum_2);
-        auto pV1 = map(g_vacuum_1, VACCUM_AMIN, VACCUM_AMAX, VACCUM_VMIN, VACCUM_VMAX);
-        auto pV2 = map(g_vacuum_2, VACCUM_AMIN, VACCUM_AMAX, VACCUM_VMIN, VACCUM_VMAX) + g_delta;
-        Serial.print(" | pV1: ");
-        Serial.print(pV1);
-        Serial.print(" | pV2: ");
-        Serial.println(pV2);
-#endif
         counter = 0;
         g_refresh_lcd = true;
     }
